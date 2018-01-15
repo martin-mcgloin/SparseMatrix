@@ -1,15 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Jan 11 16:03:22 2018
-
-@author: martinmcgloin
-"""
 
 import numpy
-import scipy
 import bisect
-        
+  
 class SparseMatrix:
     CSR = "CSR"
     CSC = "CSC"
@@ -36,7 +30,7 @@ class SparseMatrix:
         Iterates through all values in matrix left to right and stores only 
         non-zero values larger than tolerance (defaults to 0) in CSR vectors. 
 
-        Arguments:
+        Args:
             matrix (numpy.darray): the sparse matrix to use to instantiate the 
             SparseMatrix class and store in CSR format.
             
@@ -67,7 +61,7 @@ class SparseMatrix:
         value already exists, removes the value if the new value is 0, or inserts
         a new value in the CSR if value was previously zero.
         
-        Arguments:
+        Args:
             row (int): the index row position of the new value
             
             col (int): the index col position of the new value
@@ -110,7 +104,7 @@ class SparseMatrix:
         Iterates through all values in CSR and retrievs original matrix row
         and col index for value, then places in a CSC format based vectors.
         
-        Arguments:
+        Args:
             nothing
             
         Returns:
@@ -145,7 +139,7 @@ class SparseMatrix:
         same values. Initially compares row size and number of values, then 
         iterates and compares each value and column position.
         
-        Arguments:
+        Args:
             other(SparseMatrix): the SparseMatrix instance to compare with.
             
         Returns:
