@@ -71,17 +71,13 @@ class TestSparseMatrix(unittest.TestCase):
         self.sparseMatrixOnes=SparseMatrix(self.matrix_100)
         
         pass
-    
-    def tearDown(self):
-        pass
-        
         
     def test_count_non_zero(self):
         self.assertEqual(0,self.sparseMatrixZero.number_of_nonzero)
         self.assertEqual(0,len(self.sparseMatrixZero.values))
         self.assertEqual(100,SparseMatrix(self.matrix_100).number_of_nonzero)
         self.assertEqual(100,len(SparseMatrix(self.matrix_100).values))
-        
+    
     def test_tolerance(self):
         self.assertEqual(0,SparseMatrix(self.matrix_100,3).number_of_nonzero)
         self.assertEqual(100,SparseMatrix(self.matrix_100,0.5).number_of_nonzero)

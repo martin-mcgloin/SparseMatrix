@@ -27,35 +27,33 @@ class SparseMatrix:
         self.__check_valid_arguments_init(matrix)       
         self.intern_represent = self.CSR
         self.Tol=tolerance
-        self.__generate_CSR(matrix)
+        self.__generate_CSR(matrix, tolerance)
         self.__update_non_zero_count()
     
-    def __generate_CSR(self, matrix):
+    def __generate_CSR(self, matrix, tolerance):
         """Converts a numpy.darray matrix into a CSR formatted 
         
+        Iterates through all values in matrix left to right and stores only 
+        non-zero values larger than tolerance (defaults to 0) in CSR vectors. 
+
         Arguments:
-            matrix (numpy.darray): 
+            matrix (numpy.darray): the sparse matrix to use to instantiate the 
+            SparseMatrix class and store in CSR format.
             
         Returns:
-            nothing
-            
-        
-        
-        """
-        
+            nothing         
+        """        
         values = []
         row_extent = [0]
         col_indicies = []
         matrix_rows = matrix.shape[0]
         matrix_cols = matrix.shape[1]
         for i in range(0, matrix_rows):
-            previous_non_zero_count = len(values)
             for j in range(0,matrix_cols):
-                if (matrix[i][j] != 0) & (abs(matrix[i][j]) > self.Tol):
+                if (abs(matrix[i][j]) > tolerance):
                     values.append(matrix[i][j])
                     col_indicies.append(j)            
-            non_zero_row_count = len(values) - previous_non_zero_count
-            row_extent.append(row_extent[-1]+non_zero_row_count)
+            row_extent.append(len(values))
         
         self.values=values
         self.col_indicies=col_indicies
@@ -63,8 +61,21 @@ class SparseMatrix:
      
         
     def change_value(self, row, col, value):
-        """
+        """Changes the value at the given row and column index
         
+        Changes the value in the CSR representation of the sparse matrix if 
+        value already exists, removes the value if the new value is 0, or inserts
+        a new value in the CSR if value was previously zero.
+        
+        Arguments:
+            row (int): the index row position of the new value
+            
+            col (int): the index col position of the new value
+            
+            value (float): the new value
+            
+        Returns:
+            nothing
         """       
         row_col_indicies = self.__get_row_col_indicies(row)  
         #If value exist at location, replace, else, insert new value
@@ -91,12 +102,19 @@ class SparseMatrix:
             for j in range(row+1, len(self.row_extent)):
                 self.row_extent[j]+=1
             self.__update_non_zero_count()    
-        return
                 
     
     def convert_to_CSC(self):   
-        """
+        """Converts sparse matrix in CSR to CSC format
         
+        Iterates through all values in CSR and retrievs original matrix row
+        and col index for value, then places in a CSC format based vectors.
+        
+        Arguments:
+            nothing
+            
+        Returns:
+            nothing
         """
         if self.intern_represent != self.CSR:
             return
@@ -121,13 +139,26 @@ class SparseMatrix:
         self.CSC_col_extent= CSC_col_extent
         
     def compare_matricies(self, other):
+        """Compares two SparseMatrix instances for equality
+        
+        Compares that two SparseMatrix classes in CSR format have the exact 
+        same values. Initially compares row size and number of values, then 
+        iterates and compares each value and column position.
+        
+        Arguments:
+            other(SparseMatrix): the SparseMatrix instance to compare with.
+            
+        Returns:
+            boolean: True of false depending on result of comparison.
+        """
         self.__check_valid_argument_compare_matricies(other)
         
         if ((len(self.row_extent) != len(other.row_extent)) or
             (len(self.values) != len(other.values))):
             return False
         for i in range(0,len(self.values)):
-            if self.values[i] != other.values[i]:
+            if (self.values[i] != other.values[i] and 
+                self.col_indicies[i] != other.col_indicies[i]):
                 return False
         return True
     
@@ -143,8 +174,7 @@ class SparseMatrix:
             
         Returns:
             array: The return value, an array of size equal to number of rows 
-            in Sparse Matrix
-            
+            in Sparse Matrix     
         """
         self.__check_valid_arguments_mul(other)
         result = numpy.zeros(len(self.row_extent)-1)
@@ -172,8 +202,7 @@ class SparseMatrix:
             instance to add to SparseMatrix.
             
         Returns:
-            nothing
-            
+            nothing     
         """
         self.__check_valid_argument_add(other)        
         for index in range(0,len(other.values)):
@@ -185,6 +214,8 @@ class SparseMatrix:
                 self.change_value(row,col_index,addition_value)
             else:
                 self.change_value(row,col_index, current_value+addition_value)
+    
+    #Private helper functions for the class
     
     def __str__(self):
         return "{0}\n{1}\n{2}".format(self.values,self.row_extent,self.col_indicies)
