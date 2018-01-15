@@ -20,8 +20,7 @@ class TestSparseMatrix(unittest.TestCase):
             [0,0,0,0,0,0],
             [0,0,0,0,0,0]
         ])
-        
-        
+            
         self.matrix2 = numpy.array([
             [10,0,0,0,0,0],
             [0,-5,0,0,0,0],
@@ -60,6 +59,7 @@ class TestSparseMatrix(unittest.TestCase):
         self.vector2 = numpy.array([2,1,0]) # [1,-3]
         self.matrix_empty = numpy.zeros(shape=(100,100))
         self.matrix_100 = numpy.ones(shape=(10,10))
+        self.zero_vector = numpy.zeros(shape=(7,1))
         
         self.sparseMatrix1=SparseMatrix(self.matrix1)
         self.sparseMatrix2=SparseMatrix(self.matrix2)
@@ -104,7 +104,10 @@ class TestSparseMatrix(unittest.TestCase):
                                        self.sparseMatrix6*self.vector2))
         self.assertTrue(np.array_equal([15,9,24],
                                        self.sparseMatrix5*self.vector1))
-    
+    def test_mul_zero_vector(self):
+        self.assertTrue(np.array_equal(self.sparseMatrix4*self.zero_vector,
+                                       [0]*5))    
+        
     def test_add_input_validation(self):
         with self.assertRaises(TypeError):
             self.sparseMatrix6*"a string"
